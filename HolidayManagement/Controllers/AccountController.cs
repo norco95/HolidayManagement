@@ -9,6 +9,8 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using HolidayManagement.Models;
+using HolidayManagement.Repository;
+using HolidayManagement.Repository.Models;
 
 namespace HolidayManagement.Controllers
 {
@@ -60,6 +62,27 @@ namespace HolidayManagement.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
+        [HttpPost]
+        public ActionResult CreateUser(CreateUserViewModel model)
+        {
+            HolidayManagementContext database = new HolidayManagementContext();
+            UserDetails newUser = new UserDetails();
+            newUser.FirstName = model.firstName;
+            newUser.LastName = model.lastName;
+            DateTime dt = DateTime.ParseExact(model.hireDate,"yyyy. mm. dd", CultureInfo.InvariantCulture);
+
+            newUser.HireDate = dt;
+
+           // short maxDays = Convert.ToInt16(model.maxDays);
+            //newUser.MaxDays =maxDays;
+
+            database.UsersDetails.Add(newUser);
+            database.SaveChanges();
+
+
+            return RedirectToAction("Index", "Dashboard");
+           
+        }
 
         //
         // POST: /Account/Login
@@ -79,7 +102,7 @@ namespace HolidayManagement.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
+                    return RedirectToAction("Index","Dashboard");
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -153,17 +176,29 @@ namespace HolidayManagement.Controllers
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
-                    
+
                     // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    HolidayManagementContext database = new HolidayManagementContext();
 
-                    return RedirectToAction("Index", "Home");
+
+
+                    UserDetails newUser= new UserDetails();
+                    newUser.FirstName =model.FirstName;
+                    newUser.LastName =model.LastName;
+                    newUser.UID = user.Id;
+                    database.UsersDetails.Add(newUser);
+                    database.SaveChanges();
+                 
+
+                    return RedirectToAction("Index", "Dashboard");
                 }
                 AddErrors(result);
             }

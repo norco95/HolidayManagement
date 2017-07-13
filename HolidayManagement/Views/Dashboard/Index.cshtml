@@ -1,0 +1,39 @@
+﻿@model HolidayManagement.Models.DashboardViewModels
+
+
+
+<div class="container">
+   
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#home">Users</a></li>
+            <li><a data-toggle="tab" href="#menu1">My Calendar</a></li>
+            <li><a data-toggle="tab" href="#menu2">Group Management</a></li>
+            <li><a data-toggle="tab" href="#menu3">Settings</a></li>
+        </ul>
+  
+  <span data-bind="Text:Test"></span>
+
+        <div class="tab-content">
+            <div id="home" class="tab-pane fade in active">
+                @Html.Partial("_Users")
+            </div>
+            <div id="menu1" class="tab-pane fade">
+                @Html.Partial("_MyCalendar")
+                
+            </div>
+            <div id="menu2" class="tab-pane fade">
+                @Html.Partial("_GroupManagement")
+            </div>
+            <div id="menu3" class="tab-pane fade">
+                @Html.Partial("_Settings")
+            </div>
+        </div>
+</div>
+<script type="text/javascript" src="~/Scripts/Dashboard/DashboardModel.js"></script>
+<script type="text/javascript" src="~/Scripts/Dashboard/TeamModel.js"></script>
+<script type="text/javascript" src="~/Scripts/Dashboard/UserModel.js"></script>
+<script type="text/javascript">
+        InitializeDashboardModel(@Html.Raw(Json.Encode(Model)));
+</script>
+
+
