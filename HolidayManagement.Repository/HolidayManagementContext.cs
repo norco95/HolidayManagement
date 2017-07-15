@@ -19,8 +19,8 @@ namespace HolidayManagement.Repository
         public DbSet<BankHoliday> BankHolidays { get; set; }
         public DbSet<Vacation> Vacations { get; set; }
         public DbSet<VacationState> VacationStates { get; set; }
+        public object UserDetails { get; internal set; }
 
-     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

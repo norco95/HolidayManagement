@@ -62,33 +62,7 @@ namespace HolidayManagement.Models
         public bool RememberMe { get; set; }
     }
 
-    public class CreateUserViewModel
-    {
-
-        [Required]
-        [RegularExpression(@"^[A-Z]+[a-zA-Z''-'\s]*$", ErrorMessage = "Wrong First name")]
-        [Display(Name = "firstName")]
-        public string firstName { get; set; }
-
-        [Required]
-
-        [RegularExpression(@"^[A-Z]+[a-zA-Z''-'\s]*$", ErrorMessage = "Wrong Last name")]
-        [Display(Name = "lastName")]
-        public string lastName { get; set; }
-
-        [Required]
-        [EmailAddress]
-        [Display(Name = "email")]
-        public string email { get; set; }
-
-        [Required]
-        [Display(Name = "hireDate")]
-        public string hireDate { get; set; }
-        [Required]
-        [Display(Name = "maxDays")]
-        public string maxDays { get; set; }
-
-    }
+    
 
     public class RegisterViewModel
     {

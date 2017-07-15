@@ -12,58 +12,24 @@
 <div class="container">
     
     <!-- Trigger the modal with a button -->
-    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Create New User</button>
+    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" data-bind="click: $root.createButtons.bind($data, false)">Create New User</button>
 
     <!-- Modal -->
-    <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal fade" id="myModal" role="dialog" data-bind="visible: isVisibleModal">
         <div class="modal-dialog">
 
             <!-- Modal content-->
-            <div class="modal-content">
+            <div class="modal-content" >
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">Create New User</h4>
                 </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="email">Email:</label>
-                            <input type="email" class="form-control" id="email" data-bind="value: email" />
-                        </div>
-                        <div class="form-group">
-                            <label for="firstName">First Name:</label>
-                            <input type="text" class="form-control" id="firstName" data-bind="value: firstName" />
-                        </div>
-                        <div class="form-group">
-                            <label for="lastName">Last Name:</label>
-                            <input type="text" class="form-control" id="lastName" data-bind="value: lastName"   />
-                        </div>
-                        <div class="form-group">
-                            <label for="hireDate">Hire Date:</label>
-                            <input type="text" class="form-control" id="Hiredate"  data-bind="value: hireDate"/>
-                        </div>
-                        <div class="form-group">
-                            <label for="maxDays">Maximum count of available days:</label>
-                            <input type="number" min="0" class="form-control" id="maxDays" data-bind="value: maxDays"  />
-                        </div>
-                      
-                        <div class="form-group">
-                            <label for="sel1">Team:</label>
-                            <select class="form-control" id="sel1" data-bind="foreach: teams" >
-                               
-                                
-                                <option data-bind="text: Name"></option>   
-                            
-                            </select>
-                        </div>
-                        
-
-
-                        
-                        <button type="submit" class="btn btn-default" data-bind="click: createUser">Create</button>
-                    </form>
+                <div class="modal-body" >
+                   @Html.Partial("_CreateUser")
                 </div>
                 <div class="modal-footer">
+                    <button type="submit" class="btn btn-default" data-bind="click: editUser,visible: isVisibleEdit">Edit</button>
+                    <button type="submit" class="btn btn-default" data-bind="click: createUser,visible: isVisibleCreate">Create</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -78,8 +44,8 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>Firstname</th>
                     <th>Lastname</th>
+                    <th>Firstname</th>
                     <th>Hiredate</th>
                     <th>Maxdays</th>
                     <th>Email</th>
@@ -92,6 +58,7 @@
                     <td data-bind="text: hireDate"></td>
                     <td data-bind="text: maxDays"></td>
                     <td data-bind="text: email"></td>
+                    <td><button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" data-bind="click: $root.createButtons.bind($data,true)">Edit</button></td>
                 </tr>
             </tbody>
         </table>

@@ -11,6 +11,7 @@ using Microsoft.Owin.Security;
 using HolidayManagement.Models;
 using HolidayManagement.Repository;
 using HolidayManagement.Repository.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace HolidayManagement.Controllers
 {
@@ -62,27 +63,71 @@ namespace HolidayManagement.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
+
+        //
+        //POST: /Account/EditUser
+
         [HttpPost]
-        public ActionResult CreateUser(CreateUserViewModel model)
+        public async Task<ActionResult> EditUser(UserDetails data)
         {
             HolidayManagementContext database = new HolidayManagementContext();
-            UserDetails newUser = new UserDetails();
-            newUser.FirstName = model.firstName;
-            newUser.LastName = model.lastName;
-            DateTime dt = DateTime.ParseExact(model.hireDate,"yyyy. mm. dd", CultureInfo.InvariantCulture);
+            var user = await UserManager.FindByEmailAsync(data.IdentityUser.Email);
+            bool success = true;
+            var newUser = new UserDetails();
+            var message = " ";
 
-            newUser.HireDate = dt;
-
-           // short maxDays = Convert.ToInt16(model.maxDays);
-            //newUser.MaxDays =maxDays;
-
-            database.UsersDetails.Add(newUser);
+           //var a= database.UsersDetails.Find(data.IdentityUser.Id);
+            var b = database.UsersDetails.Where(i => i.IdentityUser.Id== data.IdentityUser.Id);
             database.SaveChanges();
 
 
-            return RedirectToAction("Index", "Dashboard");
-           
+
+
+
+
+
+            return Json(new { success = success, messages = message,newUser=newUser}, JsonRequestBehavior.DenyGet);
+
+            
         }
+
+
+
+
+
+        //
+        //POST: /Account/CreateUser
+        [HttpPost]
+        public async Task<ActionResult> CreateUser(UserDetails data)
+        {
+            bool success = false;
+            HolidayManagementContext database = new HolidayManagementContext();
+
+            var email = data.IdentityUser.Email;
+            data.IdentityUser = null;
+            var message = "";
+            var user = new ApplicationUser { UserName = email, Email = email };
+            var result = await UserManager.CreateAsync(user, "Password1!");
+            var res = new { Success = "True", Message = "Email is exist", newUser = "newUser " };
+            var newUser = new UserDetails();
+            if (result.Succeeded)
+            {
+                data.UID = user.Id;
+                res = new { Success = "True", Message = "Succes", newUser = "newUser " };
+                success = true;
+                database.UsersDetails.Add(data);
+             
+               database.SaveChanges();
+
+
+            }
+            else
+                message = "Email already exist";
+
+
+            return Json(new { success = success, messages = message, newUser = newUser}, JsonRequestBehavior.DenyGet);
+
+    }
 
         //
         // POST: /Account/Login

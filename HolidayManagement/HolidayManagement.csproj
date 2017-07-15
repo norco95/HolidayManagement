@@ -285,6 +285,7 @@
     <Content Include="Views\Dashboard\_MyCalendar.cshtml" />
     <Content Include="Views\Dashboard\_GroupManagement.cshtml" />
     <Content Include="Views\Dashboard\_Settings.cshtml" />
+    <Content Include="Views\Dashboard\_CreateUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
