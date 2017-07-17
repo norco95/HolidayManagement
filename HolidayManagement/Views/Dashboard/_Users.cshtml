@@ -3,8 +3,10 @@
 
 @{
     ViewBag.Title = "_Users";
-    
+
 }
+
+
 <h1> Users</h1>
 
 
@@ -49,6 +51,7 @@
                     <th>Hiredate</th>
                     <th>Maxdays</th>
                     <th>Email</th>
+         
                 </tr>
             </thead>
             <tbody data-bind="foreach: users">
@@ -58,9 +61,13 @@
                     <td data-bind="text: hireDate"></td>
                     <td data-bind="text: maxDays"></td>
                     <td data-bind="text: email"></td>
+                  
                     <td><button type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#myModal" data-bind="click: $root.createButtons.bind($data,true)">Edit</button></td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
+
+
+

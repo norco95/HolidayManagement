@@ -15,7 +15,15 @@
 
         <div class="tab-content">
             <div id="home" class="tab-pane fade in active">
+@if (User.IsInRole("Admin") || User.IsInRole("HR"))
+{
+
                 @Html.Partial("_Users")
+}
+else
+{
+     @Html.Partial("_Inactive")
+}
             </div>
             <div id="menu1" class="tab-pane fade">
                 @Html.Partial("_MyCalendar")

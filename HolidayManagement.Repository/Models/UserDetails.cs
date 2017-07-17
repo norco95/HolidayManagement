@@ -11,8 +11,9 @@ namespace HolidayManagement.Repository.Models
         public int ID { get; set; }
 
 
-        public string UID { get; set; }
+
       
+
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
@@ -24,13 +25,18 @@ namespace HolidayManagement.Repository.Models
         public int? TeamId { get; set; }
 
         [ForeignKey("TeamId")]
-
-
-
         public virtual Team Team { get; set; }
+
+        public string UID { get; set; }
 
         [ForeignKey("UID")]
         public virtual IdentityUser IdentityUser { get; set; }
+
+        public string RoleId { get; set; }
+        [ForeignKey ("RoleId")]
+        public virtual IdentityRole IdentityRole { get; set; }
+
+     
 
       
     }

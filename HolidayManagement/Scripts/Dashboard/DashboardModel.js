@@ -3,7 +3,9 @@ function DashboardModel()
     var _self=this;
     this.teams = ko.observableArray(null);
     this.users = ko.observableArray(null);
+    this.roles = ko.observableArray(null);
     this.manageUser = new UserModel();
+   
     
 
     this.initialize = function (data) {
@@ -16,8 +18,13 @@ function DashboardModel()
             return new TeamModel(team);
         });
 
+        var roles = _.map(data.RoleList, function (role, index) {
+            return new RoleModel(role);
+        });
+
         _self.teams(teams);
         _self.users(users);
+        _self.roles(roles);
     } 
     
     this.isVisibleModal= ko.observable(true);
@@ -37,23 +44,27 @@ function DashboardModel()
          
             if (iseditvisible == true)
             {
+                _self.manageUser.id(data.id());
                 _self.manageUser.email(data.email());
                 _self.manageUser.firstName(data.firstName());
                 _self.manageUser.lastName(data.lastName());
                 _self.manageUser.hireDate(data.hireDate());
                 _self.manageUser.maxDays(data.maxDays());
+                
             }
             else
             {
-                _self.manageUser.email(" ");
-                _self.manageUser.firstName(" ");
-                _self.manageUser.lastName(" ");
-                _self.manageUser.hireDate(" ");
-                _self.manageUser.maxDays(" ");
+                _self.manageUser.email("");
+                _self.manageUser.firstName("");
+                _self.manageUser.lastName("");
+                _self.manageUser.hireDate("");
+                _self.manageUser.maxDays("");
+                _self.errmes("");
             }
 
     }
 
+     
     this.editUser=function()
     {
         $.ajax({
@@ -64,13 +75,40 @@ function DashboardModel()
                 firstName: _self.manageUser.firstName,
                 lastName: _self.manageUser.lastName,
                 maxDays: _self.manageUser.maxDays,
-
+                id: _self.manageUser.id,
                 IdentityUser: {
                     Email: _self.manageUser.email
+                 
                 },
-                teamId: _self.manageUser.team.ID
+                IdentityRole:
+                    {
+                        Id: _self.manageUser.role.Id
+                    },
+                teamId: _self.manageUser.team.ID,
+               
             },
+           
+          
+
             success: function (msg) {
+
+                if (msg.success == true) {
+
+
+                   
+                    var users = _.map(msg.newUser, function (user, index) {
+                        return new UserModel(user);
+                    })
+
+                    _self.users(users);
+                    $("#myModal").modal("hide");
+                    _self.errmes(" ");
+
+
+                }
+                else {
+                    _self.errmes(msg.messages);
+                }
             }
         });
         
@@ -87,27 +125,23 @@ function DashboardModel()
                  
                 IdentityUser: {
                         Email: _self.manageUser.email 
-                    },
+                },
+                
+               
                 teamId: _self.manageUser.team.ID
              },
              success: function (msg) {
                  if (msg.success == true) {     
                    
                     
-                     var seged = new UserModel(msg.newUser);
-                     _self.manageUser.firstName = _self.manageUser.firstName;
-                     _self.manageUser.lastName = _self.manageUser.lastName;
+                     _self.manageUser.id(msg.newUser.ID);
+                
                      _self.users.push(_self.manageUser);
-                   
+
+                
 
                      $("#myModal").modal("hide");
-                     _self.manageUser.firstName(" ");
-                     _self.manageUser.lastName(" ");
-                     _self.manageUser.email(" ");
-                     _self.manageUser.hireDate(" ");
-                     _self.manageUser.maxDays(" ");
-
-                     _self.errmes(" ");
+                     _self.errmes("");
                  
                      
                  }

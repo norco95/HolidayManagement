@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace HolidayManagement.Models
 {
@@ -12,6 +13,6 @@ namespace HolidayManagement.Models
         public List<UserDetails> Userlist { get; set; }
 
         public List<Team> TeamList { get; set; }
-               
+        public List<IdentityRole> RoleList { get; internal set; }
     }
 }

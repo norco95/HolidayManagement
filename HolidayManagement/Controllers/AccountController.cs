@@ -68,28 +68,96 @@ namespace HolidayManagement.Controllers
         //POST: /Account/EditUser
 
         [HttpPost]
+        [Authorize(Roles = "Admin,HR")]
         public async Task<ActionResult> EditUser(UserDetails data)
         {
-            HolidayManagementContext database = new HolidayManagementContext();
-            var user = await UserManager.FindByEmailAsync(data.IdentityUser.Email);
-            bool success = true;
-            var newUser = new UserDetails();
-            var message = " ";
-
-           //var a= database.UsersDetails.Find(data.IdentityUser.Id);
-            var b = database.UsersDetails.Where(i => i.IdentityUser.Id== data.IdentityUser.Id);
-            database.SaveChanges();
 
 
 
+           
+                HolidayManagementContext database = new HolidayManagementContext();
+
+                bool success = true;
+
+                var message = " ";
 
 
+                //var rol = new IdentityUserRole();
+                //var roled = rol.RoleId;
+                //var a= database.UsersDetails.Find(data.IdentityUser.Id);
+                var user = database.UsersDetails.FirstOrDefault(i => i.ID == data.ID);
+
+                if (user.IdentityUser.Email == data.IdentityUser.Email)
+                {
 
 
-            return Json(new { success = success, messages = message,newUser=newUser}, JsonRequestBehavior.DenyGet);
+                    user.FirstName = data.FirstName;
+                    user.LastName = data.LastName;
+                    user.MaxDays = data.MaxDays;
+                    user.TeamId = data.TeamId;
+                    user.HireDate = data.HireDate;
+                    var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(database));
+                    var RolesForUser = await UserManager.GetRolesAsync(user.UID);
+                    if (RolesForUser.Count == 0)
+                    {
+                        var role = database.Roles.FirstOrDefault(r => r.Id == data.IdentityRole.Id);
+                        await UserManager.AddToRoleAsync(user.UID, role.Name);
+                    }
+                    else
+                    {
+                        UserManager.RemoveFromRole(user.UID, RolesForUser[0]);
 
-            
-        }
+                        var role = database.Roles.FirstOrDefault(r => r.Id == data.IdentityRole.Id);
+
+                        // Manager.RemoveFromRole(data.ID,oldname);
+                        await UserManager.AddToRoleAsync(user.UID, role.Name);
+                    }
+                    database.SaveChanges();
+                }
+                else
+                {
+                    var useremail = await UserManager.FindByEmailAsync(data.IdentityUser.Email);
+                    if (useremail == null)
+                    {
+                        user.IdentityUser.Email = data.IdentityUser.Email;
+                        user.FirstName = data.FirstName;
+                        user.LastName = data.LastName;
+                        user.MaxDays = data.MaxDays;
+                        user.TeamId = data.TeamId;
+                        user.HireDate = data.HireDate;
+                        var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(database));
+                        var RolesForUser = await UserManager.GetRolesAsync(user.UID);
+                        if (RolesForUser.Count == 0)
+                        {
+                            var role = database.Roles.FirstOrDefault(r => r.Id == data.IdentityRole.Id);
+                            await UserManager.AddToRoleAsync(user.UID, role.Name);
+                        }
+                        else
+                        {
+                            UserManager.RemoveFromRole(user.UID, RolesForUser[0]);
+
+                            var role = database.Roles.FirstOrDefault(r => r.Id == data.IdentityRole.Id);
+
+                            // Manager.RemoveFromRole(data.ID,oldname);
+                            await UserManager.AddToRoleAsync(user.UID, role.Name);
+                        }
+                        database.SaveChanges();
+                    }
+
+                    else
+                    {
+                        message = "email already exist";
+                        success = false;
+                    }
+
+
+                }
+
+                UserDetailsRepository USR = new UserDetailsRepository();
+                return Json(new { success = success, messages = message, newUser = USR.GetUsers() }, JsonRequestBehavior.DenyGet);
+
+            }
+        
 
 
 
@@ -98,6 +166,7 @@ namespace HolidayManagement.Controllers
         //
         //POST: /Account/CreateUser
         [HttpPost]
+        [Authorize(Roles = "Admin,HR")]
         public async Task<ActionResult> CreateUser(UserDetails data)
         {
             bool success = false;
@@ -108,18 +177,17 @@ namespace HolidayManagement.Controllers
             var message = "";
             var user = new ApplicationUser { UserName = email, Email = email };
             var result = await UserManager.CreateAsync(user, "Password1!");
-            var res = new { Success = "True", Message = "Email is exist", newUser = "newUser " };
+            
             var newUser = new UserDetails();
             if (result.Succeeded)
             {
                 data.UID = user.Id;
-                res = new { Success = "True", Message = "Succes", newUser = "newUser " };
                 success = true;
                 database.UsersDetails.Add(data);
-             
-               database.SaveChanges();
-
-
+                newUser = data;
+                //var role = database.Roles.FirstOrDefault(r => r.Id == data.IdentityRole.Id);
+              //  await UserManager.AddToRoleAsync(user.Id, "Employee");
+                database.SaveChanges();
             }
             else
                 message = "Email already exist";
@@ -240,6 +308,7 @@ namespace HolidayManagement.Controllers
                     newUser.LastName =model.LastName;
                     newUser.UID = user.Id;
                     database.UsersDetails.Add(newUser);
+                    await UserManager.AddToRoleAsync(user.Id, "Employee");
                     database.SaveChanges();
                  
 
@@ -514,6 +583,8 @@ namespace HolidayManagement.Controllers
                 return HttpContext.GetOwinContext().Authentication;
             }
         }
+
+        public object Manager { get; private set; }
 
         private void AddErrors(IdentityResult result)
         {

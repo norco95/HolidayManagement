@@ -86,6 +86,11 @@ namespace HolidayManagement
             }
             return manager;
         }
+
+        internal static object GetRoles()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     // Configure the application sign-in manager which is used in this application.
