@@ -1,1 +1,65 @@
 ﻿<h1> My Calendar</h1>
+<div class="container">
+
+   
+    <!-- Trigger the modal with a button -->
+    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModals" >Add new Holiday</button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModals" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add new Holiday</h4>
+                </div>
+                <div class="modal-body">
+                   @Html.Partial("_newHoliday")
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" data-bind="click: newHoliday">Add</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+   
+
+
+    <div class="row">
+        <div class="col-md-12 ">
+            <div class="row">
+                
+                <div class="col-md-2">        
+                        <button type="button" class="btn btn-primary btn-lg" data-bind="click: previous"> Previous </button>
+                 </div>
+                <div class="col-md-2">
+                    <h1 data-bind="text: Month()"></h1>
+                 </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary btn-lg" data-bind="click: next" >Next </button>
+                    </div>
+            </div>
+         </div>
+
+
+
+
+        <div class="row">
+            <div class="col-md-6 ">
+
+
+                <!-- ko foreach: calendar -->
+                <div class="well well-sm" data-bind="style: { color: Freeday() > 0 ? 'red' : 'black' }, text : Description">
+
+                </div>
+
+                <!-- /ko -->
+            </div>
+            </div>
+        </div>
+    </div>

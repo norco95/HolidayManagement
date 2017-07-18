@@ -19,7 +19,10 @@ namespace HolidayManagement.Controllers
     public class DashboardController : Controller
     {
         public UserDetailsRepository database = new UserDetailsRepository();
+        public VacationRepository vacation = new VacationRepository();
+        public VacationStateRepository vacationstate = new VacationStateRepository();
         public TeamRepository tdatabase = new TeamRepository();
+        public BankHolidayRepository bank = new BankHolidayRepository();
         
         // GET: Dashboard
         public ActionResult Index()
@@ -29,18 +32,33 @@ namespace HolidayManagement.Controllers
             var teams = tdatabase.GetTeams();
             var roleStore = new RoleStore<IdentityRole>();
             var roleMngr = new RoleManager<IdentityRole>(roleStore);
-
-
+            var banks = bank.GetBankHolidays();
+            var vacations = vacation.GetVacations();
+            var vacationstates = vacationstate.GetVacationStates();
+       
             var roles = roleMngr.Roles.ToList();
             DashboardViewModels dashboard = new DashboardViewModels()
             {
                 Userlist = users,
-                TeamList=teams,
-                RoleList = roles
+                TeamList = teams,
+                RoleList = roles,
+                VacationList = vacations,
+                VacationStateList = vacationstates,
+                BankHollyDayList = banks
+             
             };
          
             return View(dashboard);
            
+        }
+
+        [HttpPost]
+        public ActionResult AddHoliday(Vacation data)
+        {
+
+            bool success = true;
+            string message = "";
+            return Json(new { success = success, messages = message}, JsonRequestBehavior.DenyGet);
         }
        
 

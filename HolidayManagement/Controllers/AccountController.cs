@@ -173,7 +173,7 @@ namespace HolidayManagement.Controllers
             HolidayManagementContext database = new HolidayManagementContext();
 
             var email = data.IdentityUser.Email;
-            data.IdentityUser = null;
+            
             var message = "";
             var user = new ApplicationUser { UserName = email, Email = email };
             var result = await UserManager.CreateAsync(user, "Password1!");
@@ -182,12 +182,22 @@ namespace HolidayManagement.Controllers
             if (result.Succeeded)
             {
                 data.UID = user.Id;
-                success = true;
-                database.UsersDetails.Add(data);
+               
+               
                 newUser = data;
-                //var role = database.Roles.FirstOrDefault(r => r.Id == data.IdentityRole.Id);
-              //  await UserManager.AddToRoleAsync(user.Id, "Employee");
+
+                if (data.IdentityUser != null && data.IdentityUser.Roles.Count() > 0)
+                {
+                    var seged = data.IdentityUser.Roles.First().RoleId;
+                   var role = database.Roles.FirstOrDefault(r => r.Id ==seged );
+
+                    if (role != null)
+                       await UserManager.AddToRoleAsync(data.UID, role.Name);
+                }
+                data.IdentityUser = null;
+                database.UsersDetails.Add(data);
                 database.SaveChanges();
+                success = true;
             }
             else
                 message = "Email already exist";
