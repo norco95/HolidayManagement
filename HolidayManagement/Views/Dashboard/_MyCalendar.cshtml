@@ -19,7 +19,7 @@
                    @Html.Partial("_newHoliday")
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" data-bind="click: newHoliday">Add</button>
+                    <button type="button" class="btn btn-default" data-bind="click: newHoliday">Add</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -34,15 +34,22 @@
         <div class="col-md-12 ">
             <div class="row">
                 
-                <div class="col-md-2">        
+                <div class="col-md-3">        
                         <button type="button" class="btn btn-primary btn-lg" data-bind="click: previous"> Previous </button>
                  </div>
-                <div class="col-md-2">
-                    <h1 data-bind="text: Month()"></h1>
+                <div class="col-md-3">
+                    <h1 data-bind="text: actualmontyear()"></h1>
+                 
                  </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <button type="button" class="btn btn-primary btn-lg" data-bind="click: next" >Next </button>
                     </div>
+             
+              
+                <div class="col-md-3">
+                   <span>Available days:</span><span data-bind="text: ActualUserVacationsDays() "></span><span>/</span><span data-bind="text: ActualUserMaxDays() "></span>
+                </div>
+
             </div>
          </div>
 
@@ -50,14 +57,14 @@
 
 
         <div class="row">
-            <div class="col-md-6 ">
+            <div class="col-md-12 ">
 
 
                 <!-- ko foreach: calendar -->
-                <div class="well well-sm" data-bind="style: { color: Freeday() > 0 ? 'red' : 'black' }, text : Description">
+                
+                <div class="well well-sm" data-bind="css: { colorofweekend: Freeday() == 1 ,colorofholiday: Freeday()==2,colorofbank: Freeday()==3}, text : Description">
 
                 </div>
-
                 <!-- /ko -->
             </div>
             </div>

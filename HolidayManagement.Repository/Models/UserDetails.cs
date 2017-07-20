@@ -10,10 +10,6 @@ namespace HolidayManagement.Repository.Models
         [Key]
         public int ID { get; set; }
 
-
-
-      
-
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
@@ -35,6 +31,8 @@ namespace HolidayManagement.Repository.Models
         public string RoleId { get; set; }
         [ForeignKey ("RoleId")]
         public virtual IdentityRole IdentityRole { get; set; }
+
+      //  public virtual Vacation vacations { get; set; }
 
      
 

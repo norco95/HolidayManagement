@@ -1,8 +1,9 @@
+
 function DashboardModel()
 {
     var _self=this;
     this.teams = ko.observableArray(null);
-    this.toDate = ko.observable("");
+    this.toDate = ko.observable(null);
     this.fromDate = ko.observable(null);
     this.users = ko.observableArray(null);
     this.roles = ko.observableArray(null);
@@ -18,34 +19,195 @@ function DashboardModel()
     this.actualmonth = ko.observable(null);
     this.actualyear = ko.observable(null);
     this.manageUser = new UserModel();
-   
+    this.yearmonth = ko.observable(null);
+    this.vacations = ko.observableArray(null);
+    this.ActualUserMaxDays = ko.observable(null);
+    this.ActualUserVacationsDays = ko.observable(null);
+    this.vacationmodel = new VacationMondel();
+    this.actualmontyear = ko.observable(null);
+    this.reaason = ko.observable(null);
+  
 
 
+    
+    var weekday = new Array(7);
+    weekday[0] = "Sunday";
+    weekday[1] = "Monday";
+    weekday[2] = "Tuesday";
+    weekday[3] = "Wednesday";
+    weekday[4] = "Thursday";
+    weekday[5] = "Friday";
+    weekday[6] = "Saturday";
+
+    var months = new Array(12);
+    months[0] = "January";
+    months[1] = "February";
+    months[2] = "March";
+    months[3] = "April";
+    months[4] = "May";
+    months[5] = "June";
+    months[6] = "July";
+    months[7] = "August";
+    months[8] = "September";
+    months[9] = "October";
+    months[10] = "November";
+    months[11] = "December";
+
+  
+    function daysInMonth(month, year) {
+        return new Date(year, month, 0).getDate();
+    }
+
+    function vacationlistgen(vaclist) {
+
+        var vacations = _.map(vaclist, function (vac, index) {
+
+
+            var t = new Date(dateTimeReviver(vac.Date))
+            vac.Date = t;
+            var t = new Date(dateTimeReviver(vac.StartDate))
+            vac.StartDate = t;
+            var t = new Date(dateTimeReviver(vac.EndDate))
+            vac.EndDate = t;
+            return new VacationMondel(vac);
+
+        });
+        _self.vacations(vacations);
+
+    }
+  
+    var vac = new Array();
+
+    function createvacationarray() {
+        for (var i = 0; i <= 31; i++)
+            vac[i] = 0;
+        var vacations = _self.vacations();
+        vacations.forEach(function (element) {
+            if (element.startdate().getFullYear() == _self.actualyear() && element.startdate().getMonth() == _self.actualmonth()) {
+                if (element.enddate().getFullYear() == _self.actualyear() && element.enddate().getMonth() == _self.actualmonth()) {
+                    for (i = element.startdate().getDate() ; i <= element.enddate().getDate() ; i++) {
+                        vac[i] = 1;
+                    }
+
+                }
+                else
+                    for (i = element.startdate().getDate() ; i <= 31; i++) {
+                        vac[i] = 1;
+                    }
+
+
+            }
+            if (element.enddate().getMonth() == _self.actualmonth() && element.enddate().getMonth() > element.startdate().getMonth()) {
+                for (i = 0; i <= element.enddate().getDate() ; i++) {
+                    vac[i] = 1;
+                }
+            }
+
+
+            if (element.enddate().getFullYear() == _self.actualyear() && element.startdate().getFullYear() < element.enddate().getFullYear()) {
+                for (i = 0; i <= element.enddate().getDate() ; i++)
+                    vac[i] = 1;
+            }
+        });
+    }
+    function init()
+    {
+
+        var calendar = new Array();
+        var actualmonthyear =  _self.actualyear()+" "+months[_self.actualmonth()];
+        _self.actualmontyear(actualmonthyear);
+        var month = daysInMonth(_self.actualmonth() + 1, _self.actualyear());
+        var firstDay = new Date(_self.actualyear(), _self.actualmonth(), 1);
+        var l = firstDay.getDay()
+        createvacationarray();
+
+        for (var i = 0; i < month; i++) {
+            var s = new DaysModel();         
+            
+            s.Day = i;
+            s.Description = (i + 1).toString() + " " + weekday[l % 7].toString();
+
+            if (vac[i+1] == 1) {
+                s.Freeday(2);
+                s.Description = (i + 1).toString() + " " + weekday[l % 7].toString() + " My Holiday";
+            }
+
+            s.Month = _self.actualmonth();
+            if (l % 7 == 6 || l % 7 == 0) {
+                s.Freeday(1);
+                s.Description = (i + 1).toString() + " " + weekday[l % 7].toString() + " Weekend";
+            }
+            else {
+               if(vac[i+1]!=1)
+                s.Freeday(0);
+            }
+            var mybanks = _self.banks();
+            mybanks.forEach(function (element) {
+                if (element.Month() == (_self.actualmonth() + 1) && element.Day() == (i + 1)) {
+                    s.Description = (i + 1).toString() + " " + weekday[l % 7].toString() + " " + element.Description().toString();
+                    s.BankHolliday = element;
+                    s.Freeday(3);
+                }
+            });
+           
+
+            calendar.push(s);
+
+        
+
+            l++;
+
+        }
+     
+
+        _self.calendar(calendar);
+
+    }
     this.newHoliday = function()
     {
 
-        var s = _self.toDate();
-        alert(s);
-        //$.ajax({
-        //    type: "POST",
-        //    url: "/Dashboard/AddHoliday/",
-        //    data: {
-        //        StartDate: _self.fromDate(),
-        //        EndDate: _self.toDate()
-        //    },
-        //    success: function (msg) {
-        //        if (msg.success == true) {
+     
+        $.ajax({
+            type: "POST",
+            url: "/Dashboard/AddHoliday/",
+            data: {
+                StartDate: _self.fromDate(),
+                EndDate: _self.toDate(),
+                UserId: _self.manageUser.id()
+            },
+            success: function (msg) {
+                if (msg.success == true) {
+                    var sum = 0;
+                    
+                    var vacations = _.map(msg.vac, function (vac, index) {
 
+                        sum += vac.Vacationsdays;
+                        var t = new Date(dateTimeReviver(vac.Date))
+                        vac.Date = t;
+                        var t = new Date(dateTimeReviver(vac.StartDate))
+                        vac.StartDate = t;
+                        var t = new Date(dateTimeReviver(vac.EndDate))
+                        vac.EndDate = t;
+                        return new VacationMondel(vac);
+                    });
 
-        //            $("#myModals").modal("hide");
+                    var mysum=_self.ActualUserMaxDays() - sum;
+                    _self.ActualUserVacationsDays(mysum);
+                    _self.vacations(vacations);
+                    init();
+                   
+
+                    $("#myModals").modal("hide");
+
+                   
                  
-        //        }
-        //        else {
-        //            _self.errmes(msg.messages);
-        //        }
-        //    },
-        //    dataType: "json"
-        //});
+                }
+                else {
+                    _self.errmes(msg.messages);
+                }
+            },
+            dataType: "json"
+        });
     }
     
     this.initialize = function (data) {
@@ -65,72 +227,19 @@ function DashboardModel()
         var banks = _.map(data.BankHollyDayList, function (bank, index) {
             return new BankHollyDayModel(bank);
         });
-        _self.banks(banks);
-        var weekday = new Array(7);
-        weekday[0] =  "Sunday";
-        weekday[1] = "Monday";
-        weekday[2] = "Tuesday";
-        weekday[3] = "Wednesday";
-        weekday[4] = "Thursday";
-        weekday[5] = "Friday";
-        weekday[6] = "Saturday";
-       
-        var months = new Array(7);
-        months[0] = "January";
-        months[1] = "February";
-        months[2] = "March";
-        months[3] = "April";
-        months[4] = "May";
-        months[5] = "June";
-        months[6] = "July";
-        months[7] = "August";
-        months[8] = "September";
-        months[9] = "October";
-        months[10] = "November";
-        months[11] = "December";
-
-      
-
-       
-        function daysInMonth(month, year) {
-            return new Date(year, month, 0).getDate();
-        }
+        vacationlistgen(data.VacationList);
+        _self.ActualUserMaxDays(data.ActualUserMaxDays);
+        _self.ActualUserVacationsDays(data.ActUserVacation);
         var d = new Date();
         var n = d.getMonth();
-        _self.actualmonth=n;
+        _self.actualmonth(n);
         var y = d.getFullYear();
-        _self.actualyear = y;
+        _self.actualyear ( y);
         _self.Month(months[n]);
-        var month = daysInMonth(n+1, y);
-        var firstDay = new Date(y, n, 1);
-        var l = firstDay.getDay()
-        for (var i = 0; i < month; i++) {
-
-
-            var s= new DaysModel();
-            s.Day = i;
-
-           
-            s.Description = (i+1).toString()+" "+ weekday[l % 7].toString();
-            l++;
-            s.Month = n;
-            if (l % 7 == 1 || l % 7 == 0) {
-                s.Freeday(1);
-            }
-            else {
-                s.Freeday(0);
-            }
-            banks.forEach(function (element) {
-                if (element.Month() == (n+1) && element.Day() == i) {
-                 
-                    s.BankHolliday = element;
-                    s.Freeday(1);
-                }
-            });
-            _self.calendar.push(s);
-
-        }
-
+        
+       
+         init();
+    
         _self.banks(banks);
         _self.teams(teams);
         _self.users(users);
@@ -166,171 +275,79 @@ function DashboardModel()
             }
 
     }
-    
+
     this.next=function()
     {
         _self.calendar(null);
-
-        var calendar = new Array();
-
-        var weekday = new Array(7);
-        weekday[0] = "Sunday";
-        weekday[1] = "Monday";
-        weekday[2] = "Tuesday";
-        weekday[3] = "Wednesday";
-        weekday[4] = "Thursday";
-        weekday[5] = "Friday";
-        weekday[6] = "Saturday";
-
-        var months = new Array(7);
-        months[0] = "January";
-        months[1] = "February";
-        months[2] = "March";
-        months[3] = "April";
-        months[4] = "May";
-        months[5] = "June";
-        months[6] = "July";
-        months[7] = "August";
-        months[8] = "September";
-        months[9] = "October";
-        months[10] = "November";
-        months[11] = "December";
-        if (_self.actualmonth == 11) {
-            _self.actualyear = _self.actualyear +1;
-            _self.actualmonth = 0;
+       
+        if (_self.actualmonth() == 11) {
+            _self.actualyear ( _self.actualyear() +1);
+            _self.actualmonth (0);
         }
         else {
-            _self.actualmonth = _self.actualmonth +1;
+            _self.actualmonth (_self.actualmonth() +1);
         }
+        _self.Month(months[_self.actualmonth()]);
 
-        _self.Month(months[_self.actualmonth]);
-
-        function daysInMonth(month, year) {
-            return new Date(year, month, 0).getDate();
-        }
-
-
-
-        var month = daysInMonth(_self.actualmonth + 1, _self.actualyear);
-        var firstDay = new Date(_self.actualyear, _self.actualmonth, 1);
-        var l = firstDay.getDay()
-        for (var i = 0; i < month; i++) {
-
-
-            var s = new DaysModel();
-            s.Day = i;
-
-
-            s.Description = (i + 1).toString() + " " + weekday[l % 7].toString();
-            l++;
-            s.Month = _self.actualmonth;
-            if (l % 7 == 1 || l % 7 == 0) {
-                s.Freeday(1);
-            }
-            else {
-                s.Freeday(0);
-            }
-            var mybanks = _self.banks();
-            mybanks.forEach(function (element) {
-                if (element.Month() == (_self.actualmonth + 1) && element.Day() == (i+1)) {
-
-                    s.BankHolliday = element;
-                    s.Freeday(1);
-                }
-            });
-            calendar.push(s);
-
-        }
-        _self.calendar(calendar);
-
-
+        init();
     }
      
+    this.Accept=function(data)
+    {
+     
+        $.ajax({
+            type: "POST",
+            url: "/Dashboard/Accept/",
+            data: {
+                ID: data.id()
+            },
+            success: function (msg) {
+                if (msg.success == true) {
+
+                    
+                    vacationlistgen(msg.vac);
+
+                }
+
+               
+            },
+            dataType: "json"
+        });
+    }
+
+   
+    var declinedata = null;
+    this.initdecline = function (data)
+    {
+       
+        declinedata = data.id();
+        
+    }
+
+   
+
     this.previous=function()
     {
         _self.calendar(null);
-        var calendar = new Array();
-        var weekday = new Array(7);
-        weekday[0] = "Sunday";
-        weekday[1] = "Monday";
-        weekday[2] = "Tuesday";
-        weekday[3] = "Wednesday";
-        weekday[4] = "Thursday";
-        weekday[5] = "Friday";
-        weekday[6] = "Saturday";
-
-        var months = new Array(7);
-        months[0] = "January";
-        months[1] = "February";
-        months[2] = "March";
-        months[3] = "April";
-        months[4] = "May";
-        months[5] = "June";
-        months[6] = "July";
-        months[7] = "August";
-        months[8] = "September";
-        months[9] = "October";
-        months[10] = "November";
-        months[11] = "December";
-        if (_self.actualmonth == 0) {
-            _self.actualyear = _self.actualyear - 1;
-            _self.actualmonth = 11;
+        
+       
+        if (_self.actualmonth()== 0) {
+            _self.actualyear (_self.actualyear() - 1);
+            _self.actualmonth( 11);
         }
         else
         {
-            _self.actualmonth = _self.actualmonth - 1;
+            _self.actualmonth ( _self.actualmonth() - 1);
         }
 
-        _self.Month(months[_self.actualmonth]);
+        _self.Month(months[_self.actualmonth()]);
 
 
 
-
-        function daysInMonth(month, year) {
-            return new Date(year, month, 0).getDate();
-        }
+        init();
+        
        
        
-       
-        var month = daysInMonth(_self.actualmonth + 1, _self.actualyear);
-        var firstDay = new Date(_self.actualyear, _self.actualmonth, 1);
-        var l = firstDay.getDay()
-        for (var i = 0; i < month; i++) {
-
-
-           var s = new DaysModel();
-            s.Day = i;
-
-
-            s.Description = (i + 1).toString() + " " + weekday[l % 7].toString();
-            l++;
-           s.Month = _self.actualmonth;
-            if (l % 7 == 1 || l % 7 == 0) {
-                s.Freeday(1);
-            }
-            else {
-                s.Freeday(0);
-            }
-            var mybanks = _self.banks();
-            mybanks.forEach(function (element) {
-                if (element.Month() == (_self.actualmonth + 1) && element.Day() == (i+1)) {
-
-                    s.BankHolliday = element;
-                    s.Freeday(1);
-                }
-            });
-           calendar.push(s);
-
-       }
-        _self.calendar(calendar);
-
-
-     
-
-
-
-
-
            
     }
 
@@ -340,13 +357,13 @@ function DashboardModel()
             type: "POST",
             url: "/Account/EditUser/",
             data: {
-                hireDate: _self.manageUser.hireDate,
-                firstName: _self.manageUser.firstName,
-                lastName: _self.manageUser.lastName,
-                maxDays: _self.manageUser.maxDays,
-                id: _self.manageUser.id,
+                hireDate: _self.manageUser.hireDate(),
+                firstName: _self.manageUser.firstName(),
+                lastName: _self.manageUser.lastName(),
+                maxDays: _self.manageUser.maxDays(),
+                id: _self.manageUser.id(),
                 IdentityUser: {
-                    Email: _self.manageUser.email
+                    Email: _self.manageUser.email()
                  
                 },
                 IdentityRole:

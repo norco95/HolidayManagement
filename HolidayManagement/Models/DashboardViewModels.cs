@@ -24,5 +24,7 @@ namespace HolidayManagement.Models
 
         public List<Days> DayList { get; set; }
         public List<BankHoliday> BankHollyDayList { get; internal set; }
+        public int? ActualUserMaxDays { get; internal set; }
+        public int ActUserVacation { get; internal set; }
     }
 }

@@ -22,3 +22,21 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.colorofweekend{
+    color:green;
+    border-width:2px;;
+    border-color:green;
+
+}
+.colorofholiday
+{
+    color:blue;
+    border-width:2px;;
+    border-color:blue;
+}
+.colorofbank{
+     color:purple;
+    border-width:2px;;
+    border-color:purple;
+}

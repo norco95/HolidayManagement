@@ -19,7 +19,16 @@ namespace HolidayManagement.Repository.Models
 
         public DateTime Date { get; set; }
 
+        public int Vacationsdays { get; set; }
+
+        public string Reason { get; set; }
+
         [ForeignKey("StateId")]
         public virtual VacationState State {get;set;}
+        [ForeignKey("UserId")]
+        public virtual UserDetails Users { get; set; }
+
+
+
     }
 }

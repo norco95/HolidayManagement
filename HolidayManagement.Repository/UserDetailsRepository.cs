@@ -20,23 +20,14 @@ namespace HolidayManagement.Repository
             {
                 if (user.Team != null)
                     user.Team.Users = null;
+
             }
 
+
+           
             return users;
         }
     }
 }
 
-    //    //public bool GetEmail(int email)
-    //    {
-
-    //        var data = from c in IdentityUser
-    //                   where c.Email == email
-    //                   select c;
-    //        if(data)
-    //        return true;
-    //        else
-    //            return false;
-    //    }
-    //}
-//}
+   

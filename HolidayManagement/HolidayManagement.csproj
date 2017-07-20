@@ -252,7 +252,6 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Style\MyStyle.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -290,11 +289,12 @@
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\Dashboard\_Users.cshtml" />
     <Content Include="Views\Dashboard\_MyCalendar.cshtml" />
-    <Content Include="Views\Dashboard\_GroupManagement.cshtml" />
+    <Content Include="Views\Dashboard\_PlannedHolidays.cshtml" />
     <Content Include="Views\Dashboard\_Settings.cshtml" />
     <Content Include="Views\Dashboard\_CreateUser.cshtml" />
     <Content Include="Views\Dashboard\_Inactive.cshtml" />
     <Content Include="Views\Dashboard\_newHoliday.cshtml" />
+    <Content Include="Views\Dashboard\_Reason.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

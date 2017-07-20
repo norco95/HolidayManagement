@@ -11,5 +11,6 @@ namespace HolidayManagement.Repository.Models
         public string Description { get; set; }
 
         public virtual ICollection<Vacation> Vacations { get; set; }
+        
     }
 }
