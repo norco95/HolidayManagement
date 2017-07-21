@@ -165,13 +165,13 @@ function DashboardModel()
 
     }
 
-    this.editbanks=function(data)
-    {
-        _self.bankDay(data.Day());
-        _self.bankMonth(data.Month());
-        _self.bankDescription(data.Description());
-        _self.bankId(data.ID);
-    }
+    //this.editbanks=function(data)
+    //{
+    //    _self.bankDay(data.Day());
+    //    _self.bankMonth(data.Month());
+    //    _self.bankDescription(data.Description());
+    //    _self.bankId(data.ID);
+    //}
     this.newHoliday = function()
     {
 
