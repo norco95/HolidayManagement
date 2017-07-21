@@ -1,17 +1,20 @@
 ﻿<form>
 
-
+@if (User.IsInRole("Admin") || User.IsInRole("HR"))
+{
     <div class="form-group">
         <label for="sel1">Email:</label>
-
-        <select class="form-control" id="sel1" data-bind="options : users,
+       
+            <select class="form-control" id="sel1" data-bind="options : users,
                                    optionsText : 'email',
                                    optionsValue : 'id',
                                    value : manageUser.id ,
                                    optionsCaption : 'Choose...'
                                    "></select>
+        
+       
     </div>
-
+}
     <span data-bind="text: errmes" ></span>
     <div class="form-group">
         <label >From Date:</label>

@@ -25,7 +25,8 @@ function DashboardModel()
     this.ActualUserVacationsDays = ko.observable(null);
     this.vacationmodel = new VacationMondel();
     this.actualmontyear = ko.observable(null);
-    this.reaason = ko.observable(null);
+    this.reason = ko.observable(null);
+    this.newBanks = ko.observableArray(null);
   
 
 
@@ -163,10 +164,18 @@ function DashboardModel()
         _self.calendar(calendar);
 
     }
+
+    this.editbanks=function(data)
+    {
+        _self.bankDay(data.Day());
+        _self.bankMonth(data.Month());
+        _self.bankDescription(data.Description());
+        _self.bankId(data.ID);
+    }
     this.newHoliday = function()
     {
 
-     
+        _self.manageUser.id(0);
         $.ajax({
             type: "POST",
             url: "/Dashboard/AddHoliday/",
@@ -227,6 +236,10 @@ function DashboardModel()
         var banks = _.map(data.BankHollyDayList, function (bank, index) {
             return new BankHollyDayModel(bank);
         });
+
+        var newBanks =_.map(data.BankHollyDayList, function (bank, index) {
+                return new BankHollyDayModel(bank);
+            });
         vacationlistgen(data.VacationList);
         _self.ActualUserMaxDays(data.ActualUserMaxDays);
         _self.ActualUserVacationsDays(data.ActUserVacation);
@@ -240,6 +253,7 @@ function DashboardModel()
        
          init();
     
+         _self.newBanks(newBanks);
         _self.banks(banks);
         _self.teams(teams);
         _self.users(users);
@@ -324,7 +338,29 @@ function DashboardModel()
         
     }
 
-   
+
+    this.Decline = function () {
+
+        $.ajax({
+            type: "POST",
+            url: "/Dashboard/Decline/",
+            data: {
+                ID: declinedata,
+                reason: _self.reason()
+            },
+            success: function (msg) {
+                if (msg.success == true) {
+
+
+                    vacationlistgen(msg.vac);
+                    $("#Reasonmodal").modal("hide");
+                }
+
+
+            },
+            dataType: "json"
+        });
+    }
 
     this.previous=function()
     {

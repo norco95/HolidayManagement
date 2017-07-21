@@ -114,7 +114,8 @@ namespace HolidayManagement.Controllers
             var message = "";
             var vacation = database.Vacations.FirstOrDefault(i => i.ID == data.ID);
 
-            vacation.StateId = 2;
+            vacation.StateId = 3;
+            vacation.Reason = data.Reason;
 
             database.SaveChanges();
             success = true;
@@ -150,6 +151,14 @@ namespace HolidayManagement.Controllers
 
             bool success = false;
             string message = "";
+
+            if (data.EndDate<data.StartDate)
+            {
+                success = false;
+                message = "invalid date input";
+            }        
+        else
+            { 
 
          
 
@@ -211,16 +220,13 @@ namespace HolidayManagement.Controllers
                     }
 
                 }
-             
 
-                var actualuservacations = database.Vacations.Where(i => i.StateId != 3 && i.UserId==vac.UserId);
-                int sumdays = 0;
-                foreach(var act in actualuservacations)
-                {
-                    sumdays += act.Vacationsdays;
-                }
 
-                if (user.MaxDays >=countdays+sumdays)
+                    //  var actualuservacations = database.Vacations.Where(i => i.StateId != 3  && i.UserId==vac.UserId);
+                    var actualuservacations = actuservacations();
+              
+
+                if (user.MaxDays >=countdays+actualuservacations)
                 {
                     vac.StateId = 1;
                     vac.Vacationsdays = countdays;
@@ -239,13 +245,13 @@ namespace HolidayManagement.Controllers
 
 
 
-     
-
-           
+     }
 
 
-            VacationRepository VR = new VacationRepository();
-            return Json(new { success = success, messages = message, vac=VR.GetVacations() }, JsonRequestBehavior.DenyGet);
+
+
+            var VR = CreateVacationList();
+            return Json(new { success = success, messages = message, vac=VR }, JsonRequestBehavior.DenyGet);
 
 
 
